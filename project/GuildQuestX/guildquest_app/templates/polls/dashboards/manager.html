@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manager Dashboard</title>
+    <link rel="stylesheet" href="{% static 'polls/css/Edash_style.css' %}">
+</head>
+<body>
+    <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
+    <p>You are logged in as an Manager.</p>
+
+    <!-- Approve work entry form -->
+     <h2>Pending Work Entries</h2>
+     <ul>
+        {% for entry in user.manager.entries.filter(status='Pending') %}
+        <li>
+            <strong>{{ entry.employee.first_name }} {{ entry.employee.last_name }}</strong>:
+            {{ entry.hours_worked }} hours worked from {{ entry.clock_in }} to {{ entry.clock_out }}.
+            <a href="{% url 'polls:approve_entry' entry.id %}"> Approve</a>
+            <a href="{% url 'polls:reject_entry' entry.id %}">Reject</a>
+            <strong>Salary:</strong> {{ payslip.salary }} |
+            <a href="{% url 'polls:view_payslip' payslip.id %}">View Payslip</a>
+        </li>
+        {% empty %}
+        <li>No pending entries</li>
+        {% endfor %}
+     </ul>
+
+     <hr>
+
+     <!-- Generate Campaign Reports -->
+      <h2>Generate Campaign Reports</h2>
+      <ul>
+        {% for campaign in user.manager.campaigns.all %}
+        <li>
+            <strong>{{ campaign.name }}</strong> ({{ campaign.start_date }} - {{ campaign.end_date }}) -
+            <a href="{% url 'polls:generate_report' campaign.id %}">Generate Report</a>
+        </li>
+        {% empty %}
+        <li>No campaigns available</li>
+        {% endfor %}
+      </ul>
+
+      <a href="{% url 'polls:logout' %}">Logout</a>
+</body>
+</html>

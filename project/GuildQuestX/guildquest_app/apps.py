@@ -1,7 +1,6 @@
 from django.apps import AppConfig
 
 
-class PollsConfig(AppConfig):
+class GuildquestAppConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "django_polls"
-    label = "polls"
+    name = "GuildQuestX.guildquest_app"

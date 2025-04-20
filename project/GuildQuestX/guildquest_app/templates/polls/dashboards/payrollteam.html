@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payroll Team Dashboard</title>
+    <link rel="stylesheet" href="{% static 'polls/css/Edash_style.css' %}">
+</head>
+<body>
+    <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
+    <p>You are logged in as a Payroll Team Member.</p>
+
+    <!-- Process Payroll -->
+     <h2>Process Payroll</h2>
+     <ul>
+        {% for entry in user.payrollteam.entries.filter(status='approved') %}
+        <li>
+            <strong>{{ entry.employee.first_name }} {{ entry.employee.last_name }}:</strong>
+            {{ entry.hours_worked }} hours worked.
+            <a href="{% url 'polls:process_payslip' entry.id %}">Generate Payslip</a>
+        </li>
+        {% empty %}
+        <li>No entries to process.</li>
+        {% endfor %}
+     </ul>
+
+      <a href="{% url 'polls:logout' %}">Logout</a>
+</body>
+</html>

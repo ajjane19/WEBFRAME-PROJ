@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Team Leader Dashboard</title>
+    <link rel="stylesheet" href="{% static 'polls/css/Edash_style.css' %}">
+</head>
+<body>
+    <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
+    <p>You are logged in as a Team Leader.</p>
+
+    <!-- Assign tasks to employees -->
+     <h2>Assign Tasks</h2>
+     <form action="{%url 'polls:assign_task' %}" method="POST">
+        {% csrf_token %}
+        <label for="employee">Employee:</label>
+        <select name="employee" required>
+            {% for emp in user.teamleader.employees.all %}
+            <option value="{{ emp.id }}">{{ emp.first_name }} {{ emp.last_name }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="description">Task Description:</label>
+        <textarea name="description" required></textarea>
+        <br><br>
+        <label for="due_date">Due Date:</label>
+        <input type="date" name="due_date" required>
+        <br><br>
+
+        <input type="submit" value="Assign Task">
+    </form>
+
+    <hr>
+
+    <!-- View Campaigns -->
+     <h2>Ongoing Campaigns</h2>
+     <ul>
+        {% for campaign in user.teamleader.campaigns.all %}
+        <li><strong>{{ campaign.ame}}</strong> ({{ campain.start_date }} - {{ campaign.end_date }}) </li>
+        {% empty %}
+        <li>No campaigns ongoing.</li>
+     </ul>
+
+      <a href="{% url 'polls:logout' %}">Logout</a>
+</body>
+</html>

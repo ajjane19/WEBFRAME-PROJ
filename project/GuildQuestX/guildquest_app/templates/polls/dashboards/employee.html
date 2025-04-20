@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Dashboard</title>
+    <link rel="stylesheet" href="{% static 'polls/css/Edash_style.css' %}">
+</head>
+<body>
+    <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
+    <p>You are logged in as an Employee.</p>
+
+    <!-- Submit work entry form -->
+     <h2>Submit Work Entry</h2>
+     <form action="{%url 'polls:submit_entry' %}" method="POST">
+        {% csrf_token %}
+        <label for="hours_worked">Hours Worked:</label>
+        <input type="number" step="0.1" name="hours_worked" required>
+        <br><br>
+        <label for="clock_in">Clock In:</label>
+        <input type="datetime-local" name="clock_in" required>
+        <br><br>
+        <label for="clock_out">Clock Out:</label>
+        <input type="datetime-local" name="clock_out" required>
+        <br><br>
+
+        <input type="submit" value="Submit Entry">
+    </form>
+    <hr>
+
+    <!-- Viewing Payslips -->
+     <h2>Your Payslips</h2>
+     <ul>
+        {% for payslip in user.employee.payslips.all %}
+        <li>
+            <strong>Date:</strong> {{ payslip.issued_date }} |
+            <strong>Salary:</strong> {{ payslip.salary }} |
+            <a href="{% url 'polls:view_payslip' payslip.id %}">View Payslip</a>
+        </li>
+        {% empty %}
+        <li>No payslips available</li>
+        {% endfor %}
+     </ul>
+     <a href="{% url 'polls:logout' %}">Logout</a>
+</body>
+</html>

@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'GuildQuestX.guildquest_app'
+    
 ]
 
 MIDDLEWARE = [
@@ -114,10 +116,17 @@ TIME_ZONE = 'Europe/Dublin'
 
 STATIC_URL = '/static/'
 
-# This part was for the background image
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'static'),
-# ]
+STATICFILES_DIRS = [
+    BASE_DIR / 'GuildQuestX/guildquest_app/static',
+]
+
+
+#For redirecting
+LOGIN_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'dashboard'
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
