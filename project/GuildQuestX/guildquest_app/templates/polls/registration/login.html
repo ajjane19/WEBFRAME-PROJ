@@ -4,16 +4,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="{% static 'polls/Login.css' %}">
+    <link rel="stylesheet" href="{% static 'polls/css/nav.css' %}">
+    <link rel="stylesheet" href="{% static 'polls/css/login/login.css' %}">
 </head>
 <body>
-    <h2>Login</h2>
+    <!-- Navbar -->
+    <nav>
+        <ul>
+            <a href="{% url 'polls:index' %}"><img src="{% static 'polls/images/logo.png' %}"></a>
+            <li><a href="{% url 'polls:index' %}">Home</a></li>
+            <li><a href="{% url 'polls:dashboard' %}">Dashboard</a></li>
+
+            {% if user.is_authenticated %}
+            <!-- Display logout if user is authenticated -->
+            <li>
+                <form id="logout-form" method="POST" action="{% url 'polls:logout' %}" style="display: none;">
+                    {% csrf_token %}
+                </form>
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+            </li>
+            {% else %}
+            <!-- Display login/signin if user is not authenticated -->
+            <li><a href="{% url 'polls:login' %}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <h1>Login</h1>
+
     {% if form.errors %}
         <p>your username and password did not match. Please try again.</p>
     {% endif %}
     <form method="post">
         {% csrf_token %}
+        <!-- Rendering forms -->
         {{form.as_p}}
         <button type = "submit">Login</button>
+    </form>
+    
+    <!-- Footer -->
+    <footer>
+        <p>Need help? <a href="mailto:support@guildquest.com">Contact Support</a></p>
+    </footer>
 </body>
 </html>

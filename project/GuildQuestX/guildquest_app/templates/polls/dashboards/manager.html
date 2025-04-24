@@ -1,46 +1,137 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Manager Dashboard</title>
-    <link rel="stylesheet" href="{% static 'polls/css/Edash_style.css' %}">
+    <link rel="stylesheet" href="{% static 'polls/css/dash/Mdash.css' %}">
+    <link rel="stylesheet" href="{% static 'polls/css/nav.css' %}">
+
 </head>
 <body>
+
+    <!-- Navbar -->
+    <nav>
+        <ul>
+            <a href="{% url 'polls:index' %}"><img src="{% static 'polls/images/logo.png' %}"></a>
+            <li><a href="{% url 'polls:index' %}">Home</a></li>
+            <li><a href="{% url 'polls:dashboard' %}">Dashboard</a></li>
+
+            {% if user.is_authenticated %}
+            <!-- Display logout if user is authenticated -->
+            <li>
+                <form id="logout-form" method="POST" action="{% url 'polls:logout' %}" style="display: none;">
+                    {% csrf_token %}
+                </form>
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+            </li>
+            {% else %}
+            <!-- Display login/signin if user is not authenticated -->
+            <li><a href="{% url 'polls:login' %}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Start of contents -->
     <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
-    <p>You are logged in as an Manager.</p>
 
-    <!-- Approve work entry form -->
-     <h2>Pending Work Entries</h2>
-     <ul>
-        {% for entry in user.manager.entries.filter(status='Pending') %}
-        <li>
-            <strong>{{ entry.employee.first_name }} {{ entry.employee.last_name }}</strong>:
-            {{ entry.hours_worked }} hours worked from {{ entry.clock_in }} to {{ entry.clock_out }}.
-            <a href="{% url 'polls:approve_entry' entry.id %}"> Approve</a>
-            <a href="{% url 'polls:reject_entry' entry.id %}">Reject</a>
-            <strong>Salary:</strong> {{ payslip.salary }} |
-            <a href="{% url 'polls:view_payslip' payslip.id %}">View Payslip</a>
-        </li>
-        {% empty %}
-        <li>No pending entries</li>
+    <div class="content-m">
+    <!-- Pending Work Entries Section -->
+<h2>Pending Work Entries</h2>
+<ul>
+    {% for entry in pending_entries %}
+    <li>
+        <strong>{{ entry.employee.first_name }} {{ entry.employee.last_name }}</strong>:
+        {{ entry.hours_worked }} hours worked from {{ entry.clock_in }} to {{ entry.clock_out }}.
+        <a href="{% url 'polls:approve_entry' entry.id %}">Approve</a>
+        <a href="{% url 'polls:reject_entry' entry.id %}">Reject</a>
+
+        {% for payslip in payslips %}
+            {% if payslip.entry.id == entry.id %}
+                <strong>Salary:</strong> {{ payslip.salary }} |
+                <a href="{% url 'polls:view_payslip' payslip.id %}">View Payslip</a>
+            {% endif %}
         {% endfor %}
-     </ul>
+    </li>
+    {% empty %}
+    <li>No pending entries</li>
+    {% endfor %}
+</ul>
 
-     <hr>
+<!-- Create New Campaign Form -->
+<h2>Create New Campaign</h2>
+<form method="POST" action="/guildquest/manager/dashboard/">
+    {% csrf_token %}
+    
+    <label>Campaign Name:</label><br>
+    <input type="text" name="name" required><br><br>
 
-     <!-- Generate Campaign Reports -->
-      <h2>Generate Campaign Reports</h2>
-      <ul>
-        {% for campaign in user.manager.campaigns.all %}
-        <li>
-            <strong>{{ campaign.name }}</strong> ({{ campaign.start_date }} - {{ campaign.end_date }}) -
-            <a href="{% url 'polls:generate_report' campaign.id %}">Generate Report</a>
-        </li>
-        {% empty %}
-        <li>No campaigns available</li>
+    <label>Description:</label><br>
+    <textarea name="description" required></textarea><br><br>
+
+    <label>Start Date:</label><br>
+    <input type="date" name="start_date" required><br><br>
+
+    <label>End Date:</label><br>
+    <input type="date" name="end_date" required><br><br>
+
+    <label>Team Leader:</label><br>
+    <select name="team_leader" required>
+        {% for leader in team_leaders %}
+            <option value="{{ leader.id }}">{{ leader.first_name }} {{ leader.last_name }}</option>
         {% endfor %}
-      </ul>
+    </select><br><br>
 
-      <a href="{% url 'polls:logout' %}">Logout</a>
+    <label>Employee:</label><br>
+    <select name="employees" multiple>
+        {% for emp in employees %}
+          <option value="{{ emp.id }}">{{ emp.first_name }} {{ emp.last_name }}</option>
+        {% endfor %}
+      </select>
+      <br><br>
+
+    <button type="submit" name="create_campaign">Create Campaign</button>
+</form>
+
+<!-- Generate Campaign Reports Section -->
+<h2>Generate Campaign Reports</h2>
+<ul>
+    {% for campaign in campaigns %}
+        <li>
+            <strong>{{ campaign.name }}</strong> ({{ campaign.start_date }} - {{ campaign.end_date }})
+            <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="campaign_id" value="{{ campaign.id }}">
+                <button type="submit" name="generate_report">Generate Report</button>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
+
+{% if selected_campaign %}
+    <h3>Report for: {{ selected_campaign.name }}</h3>
+
+    {% if campaign_report %}
+        <p><strong>Budget:</strong> ${{ campaign_report.budget }}</p>
+        <p><strong>Report Notes:</strong> {{ campaign_report.report_data }}</p>
+    {% endif %}
+
+    {% if report_entries %}
+        <ul>
+            {% for entry in report_entries %}
+                <li>{{ entry.employee }} - {{ entry.hours_worked }} hrs ({{ entry.clock_in }} → {{ entry.clock_out }})</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No approved entries for this campaign yet.</p>
+    {% endif %}
+{% endif %}
+
+</div>
+    <!-- Footer -->
+    <footer>
+        <p>Need help? <a href="mailto:support@guildquest.com">Contact Support</a></p>
+    </footer>
 </body>
 </html>

@@ -1,28 +1,100 @@
+{% load static %}  {# loads Django’s static template tag so we can use static files like CSS and images #}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Payroll Team Dashboard</title>
-    <link rel="stylesheet" href="{% static 'polls/css/Edash_style.css' %}">
+
+    {# linking CSS files from our static directory #}
+    <link rel="stylesheet" href="{% static 'polls/css/dash/Pdash.css' %}">
+    <link rel="stylesheet" href="{% static 'polls/css/nav.css' %}">
 </head>
 <body>
-    <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
-    <p>You are logged in as a Payroll Team Member.</p>
 
-    <!-- Process Payroll -->
-     <h2>Process Payroll</h2>
-     <ul>
-        {% for entry in user.payrollteam.entries.filter(status='approved') %}
-        <li>
-            <strong>{{ entry.employee.first_name }} {{ entry.employee.last_name }}:</strong>
-            {{ entry.hours_worked }} hours worked.
-            <a href="{% url 'polls:process_payslip' entry.id %}">Generate Payslip</a>
-        </li>
-        {% empty %}
-        <li>No entries to process.</li>
-        {% endfor %}
-     </ul>
+    <!-- Navbar -->
+    <nav>
+        <ul>
+            {# clickable logo image that takes user to homepage #}
+            <a href="{% url 'polls:index' %}">
+                <img src="{% static 'polls/images/logo.png' %}" alt="Logo">
+            </a>
+            <li><a href="{% url 'polls:index' %}">Home</a></li>
+            <li><a href="{% url 'polls:dashboard' %}">Dashboard</a></li>
 
-      <a href="{% url 'polls:logout' %}">Logout</a>
+            {# Show logout if user is logged in, otherwise show login #}
+            {% if user.is_authenticated %}
+            <li>
+                <form id="logout-form" method="POST" action="{% url 'polls:logout' %}" style="display: none;">
+                    {% csrf_token %}
+                </form>
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+            </li>
+            {% else %}
+            <li><a href="{% url 'polls:login' %}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Main content-->
+    <div class="payroll-container">
+        <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
+        <h2>Process Approved Entries</h2>
+
+        {# Display any feedback messages (e.g., "Payslip created successfully") #}
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Showing a list of approved entries-->
+        {% if approved_entries %}
+        <ul>
+            {% for entry in approved_entries %}
+            <li>
+                <strong>{{ entry.employee.first_name }} {{ entry.employee.last_name }}</strong> —
+                {{ entry.hours_worked }} hrs ({{ entry.clock_in }} to {{ entry.clock_out }})
+
+                <!--show who approved the entry or say “Approval Pending”-->
+                {% if entry.approved_by %}
+                <br><small>Approved by: {{ entry.approved_by.get_full_name }}</small>
+                {% else %}
+                <br><small>Approval Pending</small>
+                {% endif %}
+
+                {# Form to process payslip for each entry #}
+                <form method="POST" action="{% url 'polls:process_payslip' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="entry_id" value="{{ entry.id }}">
+
+                    <div>
+                        <label for="salary_{{ entry.id }}">Salary:</label>
+                        <input type="number" id="salary_{{ entry.id }}" name="salary" step="0.01" required>
+
+                        <label for="deductions_{{ entry.id }}">Deductions:</label>
+                        <input type="number" id="deductions_{{ entry.id }}" name="deductions" step="0.01" required>
+
+                        <label for="bonus_{{ entry.id }}">Bonus:</label>
+                        <input type="number" id="bonus_{{ entry.id }}" name="bonus" step="0.01" required>
+                    </div>
+
+                    <button type="submit">Create Payslip</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        {# fallback message if there are no entries to process #}
+        <p>No approved entries to process.</p>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Need help? <a href="mailto:support@guildquest.com">Contact Support</a></p>
+    </footer>
 </body>
 </html>

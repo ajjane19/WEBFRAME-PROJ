@@ -1,45 +1,98 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Employee Dashboard</title>
-    <link rel="stylesheet" href="{% static 'polls/css/Edash_style.css' %}">
+
+    <!-- CSS file for styling -->
+    <link rel="stylesheet" href="{% static 'polls/css/dash/Edash.css' %}">
+    <link rel="stylesheet" href="{% static 'polls/css/nav.css' %}">
 </head>
 <body>
-    <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
-    <p>You are logged in as an Employee.</p>
 
-    <!-- Submit work entry form -->
-     <h2>Submit Work Entry</h2>
-     <form action="{%url 'polls:submit_entry' %}" method="POST">
+    <!-- Navbar -->
+    <nav>
+        <ul>
+            <a href="{% url 'polls:index' %}">
+                <img src="{% static 'polls/images/logo.png' %}" alt="Logo">
+            </a>
+            <li><a href="{% url 'polls:index' %}">Home</a></li>
+            <li><a href="{% url 'polls:dashboard' %}">Dashboard</a></li>
+
+            {% if user.is_authenticated %}
+            <!-- Logout option if logged in -->
+            <li>
+                <form id="logout-form" method="POST" action="{% url 'polls:logout' %}" style="display: none;">
+                    {% csrf_token %}
+                </form>
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+            </li>
+            {% else %}
+            <!-- Show login link if not logged in -->
+            <li><a href="{% url 'polls:login' %}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Welcome message -->
+    <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
+
+    <!-- Work entry form -->
+    <h2>Submit Work Entry</h2>
+    <form action="{% url 'polls:submit_entry' %}" method="POST">
         {% csrf_token %}
         <label for="hours_worked">Hours Worked:</label>
-        <input type="number" step="0.1" name="hours_worked" required>
-        <br><br>
+        <input type="number" step="0.1" name="hours_worked" required><br><br>
+
         <label for="clock_in">Clock In:</label>
-        <input type="datetime-local" name="clock_in" required>
-        <br><br>
+        <input type="datetime-local" name="clock_in" required><br><br>
+
         <label for="clock_out">Clock Out:</label>
-        <input type="datetime-local" name="clock_out" required>
-        <br><br>
+        <input type="datetime-local" name="clock_out" required><br><br>
 
         <input type="submit" value="Submit Entry">
     </form>
+
     <hr>
 
-    <!-- Viewing Payslips -->
-     <h2>Your Payslips</h2>
-     <ul>
-        {% for payslip in user.employee.payslips.all %}
-        <li>
-            <strong>Date:</strong> {{ payslip.issued_date }} |
-            <strong>Salary:</strong> {{ payslip.salary }} |
-            <a href="{% url 'polls:view_payslip' payslip.id %}">View Payslip</a>
-        </li>
-        {% empty %}
-        <li>No payslips available</li>
-        {% endfor %}
-     </ul>
-     <a href="{% url 'polls:logout' %}">Logout</a>
+    <!-- Payslips Section -->
+    <h2>Your Payslips</h2>
+    <div class="pay-content">
+        <ul>
+            {% for payslip in user.employee.payslips.all %}
+            <li>
+                <!-- Basic info always shown -->
+                <strong>Date:</strong> {{ payslip.issued_date }} |
+                <strong>Salary:</strong> {{ payslip.salary }}
+
+                <!-- Expandable section for full payslip info -->
+                <details style="margin-top: 8px; background-color: #f9f9f9; padding: 10px; border-left: 3px solid #33ff3370;">
+                    <summary style="cursor: pointer;">View Full Payslip</summary>
+
+                    <p><strong>Hours Worked:</strong> {{ payslip.entry.hours_worked }}</p>
+                    <p><strong>Clock In:</strong> {{ payslip.entry.clock_in }}</p>
+                    <p><strong>Clock Out:</strong> {{ payslip.entry.clock_out }}</p>
+                    <p><strong>Deductions:</strong> {{ payslip.deductions }}</p>
+                    <p><strong>Bonus:</strong> {{ payslip.bonus }}</p>
+                    <p><strong>Total Paid:</strong>
+                        {{ payslip.salary|floatformat:2 }} + 
+                        {{ payslip.bonus|floatformat:2 }} -
+                        {{ payslip.deductions|floatformat:2 }}
+                    </p>
+                </details>
+            </li>
+            {% empty %}
+            <li>No payslips available</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Need help? <a href="mailto:support@guildquest.com">Contact Support</a></p>
+    </footer>
+
 </body>
 </html>

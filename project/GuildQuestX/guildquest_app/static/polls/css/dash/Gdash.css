@@ -1,0 +1,71 @@
+/* General Body Styling */
+body {
+    background-color: #ffffff; /* Light green background */
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Main Content Container */
+.guest-dashboard-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    font-size: 28px;
+    color: #2d6a4f; 
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+/* Features Section */
+.features-overview h3 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.features-overview ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+.features-overview ul li {
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 10px;
+}
+
+.features-overview ul li strong {
+    color: #2d6a4f; /* Dark green for strong text */
+}
+
+/* Call-to-Action (CTA) Buttons */
+.cta-buttons {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.cta-buttons .btn {
+    background-color: #2d6a4f; 
+    color: white;
+    padding: 12px 20px;
+    font-size: 18px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.cta-buttons .btn:hover {
+    background-color: #38b000;
+}

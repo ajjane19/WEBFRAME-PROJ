@@ -1,46 +1,114 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Team Leader Dashboard</title>
-    <link rel="stylesheet" href="{% static 'polls/css/Edash_style.css' %}">
+    <link rel="stylesheet" href="{% static 'polls/css/dash/Tdash.css' %}">
+    <link rel="stylesheet" href="{% static 'polls/css/nav.css' %}">
 </head>
 <body>
-    <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
-    <p>You are logged in as a Team Leader.</p>
 
-    <!-- Assign tasks to employees -->
-     <h2>Assign Tasks</h2>
-     <form action="{%url 'polls:assign_task' %}" method="POST">
-        {% csrf_token %}
-        <label for="employee">Employee:</label>
-        <select name="employee" required>
-            {% for emp in user.teamleader.employees.all %}
-            <option value="{{ emp.id }}">{{ emp.first_name }} {{ emp.last_name }}</option>
+<!-- Navbar -->
+<nav>
+    <ul>
+        <a href="{% url 'polls:index' %}"><img src="{% static 'polls/images/logo.png' %}"></a>
+        <li><a href="{% url 'polls:index' %}">Home</a></li>
+        <li><a href="{% url 'polls:dashboard' %}">Dashboard</a></li>
+        {% if user.is_authenticated %}
+        <li>
+            <form id="logout-form" method="POST" action="{% url 'polls:logout' %}" style="display: none;">
+                {% csrf_token %}
+            </form>
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+        </li>
+        {% else %}
+        <li><a href="{% url 'polls:login' %}">Login</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<h1>Welcome, {{ teamleader.user.first_name }} {{ teamleader.user.last_name }}</h1>
+
+<div class="content-t">
+
+<!-- Assign tasks to employees -->
+<h2>Assign Tasks</h2>
+
+<form action="{% url 'polls:assign_task' %}" method="POST">
+    {% csrf_token %}
+
+    <!-- Employee Dropdown -->
+    <label for="employee">Employee:</label>
+    <select name="employee" required>
+        {% if employees %}
+            {% for emp in employees %}
+                <option value="{{ emp.id }}">{{ emp.first_name }} {{ emp.last_name }}</option>
             {% endfor %}
-        </select>
-        <br><br>
-        <label for="description">Task Description:</label>
-        <textarea name="description" required></textarea>
-        <br><br>
-        <label for="due_date">Due Date:</label>
-        <input type="date" name="due_date" required>
-        <br><br>
+        {% else %}
+            <option disabled>No employees available</option>
+        {% endif %}
+    </select>
+    <br><br>
 
-        <input type="submit" value="Assign Task">
-    </form>
+    <!-- Task Description -->
+    <label for="description">Task Description:</label>
+    <textarea name="description" required></textarea>
+    <br><br>
 
+    <!-- Due Date -->
+    <label for="due_date">Due Date:</label>
+    <input type="date" name="due_date" required>
+    <br><br>
+
+    <!-- Campaign Dropdown -->
+    <label for="campaign">Campaign:</label>
+    <select name="campaign" required>
+        {% for campaign in teamleader.get_campaigns %}
+            <option value="{{ campaign.id }}">{{ campaign.name }}</option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <!-- Submit Button -->
+    <input type="submit" value="Assign Task">
+</form>
+
+<hr>
+
+<!-- Ongoing Campaigns Section -->
+<h2>Ongoing Campaigns</h2>
+<ul>
+    {% for campaign in teamleader.get_campaigns %}
+    <li>
+        <strong>{{ campaign.name }}</strong> ({{ campaign.start_date }} - {{ campaign.end_date }})
+
+        <form method="POST" action="{% url 'polls:update_campaign_report' %}" style="margin-top:10px;">
+            {% csrf_token %}
+            <input type="hidden" name="campaign_id" value="{{ campaign.id }}">
+
+            {% with campaign.reports.first as report %}
+                <label for="report_data_{{ campaign.id }}">Report Notes:</label><br>
+                <textarea name="report_data" rows="3" cols="50" placeholder="Enter your progress notes here..." required>{{ report.report_data|default_if_none:"" }}</textarea><br>
+
+                <label for="budget_{{ campaign.id }}">Budget:</label>
+                <input type="number" step="0.01" name="budget" value="{{ report.budget|default:0 }}" required><br>
+            {% endwith %}
+
+            <button type="submit">Save Report</button>
+        </form>
+    </li>
     <hr>
+    {% empty %}
+    <li>No campaigns ongoing.</li>
+    {% endfor %}
+</ul>
 
-    <!-- View Campaigns -->
-     <h2>Ongoing Campaigns</h2>
-     <ul>
-        {% for campaign in user.teamleader.campaigns.all %}
-        <li><strong>{{ campaign.ame}}</strong> ({{ campain.start_date }} - {{ campaign.end_date }}) </li>
-        {% empty %}
-        <li>No campaigns ongoing.</li>
-     </ul>
+<!-- Footer -->
+<footer>
+    <p>Need help? <a href="mailto:support@guildquest.com">Contact Support</a></p>
+</footer>
 
-      <a href="{% url 'polls:logout' %}">Logout</a>
+</div>
 </body>
 </html>

@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'GuildQuestX.guildquest_app'
+    "GuildQuestX.guildquest_app",
     
 ]
 
@@ -122,9 +122,9 @@ STATICFILES_DIRS = [
 
 
 #For redirecting
-LOGIN_URL = '/login/'
+LOGIN_URL = '/guildquest/login/'
 LOGOUT_REDIRECT_URL = '/'
-LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_REDIRECT_URL = '/guildquest/dashboard/'
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 

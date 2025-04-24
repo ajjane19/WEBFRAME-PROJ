@@ -1,0 +1,55 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'polls/css/nav.css' %}">
+    <link rel="stylesheet" href="{% static 'polls/css/dash/Gdash.css' %}">
+    <title>Guest Dashboard</title>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <ul>
+            <a href="{% url 'polls:index' %}"><img src="{% static 'polls/images/logo.png' %}" alt="Logo"></a>
+            <li><a href="{% url 'polls:index' %}">Home</a></li>
+            <li><a href="{% url 'polls:dashboard' %}">Dashboard</a></li>
+
+            {% if user.is_authenticated %}
+            <li>
+                <form id="logout-form" method="POST" action="{% url 'polls:logout' %}" style="display: none;">
+                    {% csrf_token %}
+                </form>
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+            </li>
+            {% else %}
+            <li><a href="{% url 'polls:login' %}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <div class="guest-dashboard-container">
+        <h2>Welcome, Guest!</h2>
+        <p>Explore the platform and discover the many features we offer. Log in to access full capabilities!</p>
+
+        <section class="features-overview">
+            <h3>Why login?</h3>
+            <ul>
+                <li><strong>Access Personalized Dashboard:</strong> Get detailed insights into your projects and tasks.</li>
+                <li><strong>Manage Payroll:</strong> Keep track of your hours and salary with ease.</li>
+                <li><strong>Collaborate Effectively:</strong> Work with team members and managers to achieve success.</li>
+            </ul>
+        </section>
+
+        <div class="cta-buttons">
+            <a href="{% url 'polls:login' %}" class="btn">Login</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Need help? <a href="mailto:support@guildquest.com">Contact Support</a></p>
+    </footer>
+    
+</body>
+</html>

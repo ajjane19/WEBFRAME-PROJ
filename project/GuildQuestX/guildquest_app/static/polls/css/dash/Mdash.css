@@ -1,0 +1,108 @@
+body{
+    background-color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding:0;
+    
+}
+
+h1, h2, h3{
+    color: #2a6b36;
+    font-weight: bold;
+}
+
+h2{
+    margin-top: 40px;
+    border-bottom: 2px solid #4caf50;
+    padding-bottom: 5px;
+}
+
+h3{
+    margin-top: 20px;
+    color: #2a6b36;
+}
+
+/* form styling */
+form{
+    background-color: #e8f5e9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+form label{
+    font-size: 1.1rem;
+    color: #2a6b36;
+    margin-bottom: 5px;
+}
+
+form input, form textarea, form select{
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #4caf50;
+    border-radius: 5px;
+    font-size: 1rem;
+
+}
+
+form button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+
+form button:hover {
+    background-color: #388e3c;
+}
+
+/* List styling */
+.content-m ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.content-m ul li {
+    padding: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.content-m ul li a {
+    color: #4caf50;
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.content-m ul li a:hover {
+    color: #388e3c; 
+}
+
+/* Approve/Reject buttons */
+.content-m ul li a {
+    background-color: #4caf50;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.content-m ul li a:hover {
+    background-color: #388e3c;
+}
+
+/* Empty state */
+.content-m ul li.no-entries {
+    color: #999;
+    font-style: italic;
+}

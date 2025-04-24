@@ -16,10 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from GuildQuestX.guildquest_app import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('GuildQuestX.guildquest_app.urls')),
-
+    # Url for accessing the admin panel
+    path("admin/", admin.site.urls),
+    # Including urls from the guildquest_app and giving it a namespace for easy url ref
+    path("guildquest/", include(("GuildQuestX.guildquest_app.urls", "polls"), namespace="polls")),
+    # Url for the homepage, trigger the 'index' view from guildquest_app
+    path("", views.index),
 ]
 
