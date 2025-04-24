@@ -116,16 +116,6 @@
         <p><strong>Budget:</strong> ${{ campaign_report.budget }}</p>
         <p><strong>Report Notes:</strong> {{ campaign_report.report_data }}</p>
     {% endif %}
-
-    {% if report_entries %}
-        <ul>
-            {% for entry in report_entries %}
-                <li>{{ entry.employee }} - {{ entry.hours_worked }} hrs ({{ entry.clock_in }} → {{ entry.clock_out }})</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No approved entries for this campaign yet.</p>
-    {% endif %}
 {% endif %}
 
 </div>

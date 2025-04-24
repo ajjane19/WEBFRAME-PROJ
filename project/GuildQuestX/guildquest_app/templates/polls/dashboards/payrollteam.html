@@ -41,15 +41,6 @@
         <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
         <h2>Process Approved Entries</h2>
 
-        {# Display any feedback messages (e.g., "Payslip created successfully") #}
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div class="message">{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
         <!-- Showing a list of approved entries-->
         {% if approved_entries %}
         <ul>

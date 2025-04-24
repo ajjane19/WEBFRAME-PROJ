@@ -115,11 +115,10 @@ def manager_dashboard(request):
                     messages.error(request, "Selected Team Leader does not exist.")
 
             # Generate Report
-            elif 'generate_report' in request.POST:
+            if 'generate_report' in request.POST:
                 campaign_id = request.POST.get('campaign_id')
                 try:
                     selected_campaign = Campaign.objects.get(id=campaign_id, manager=manager)
-                    report_entries = Entry.objects.filter(campaign=selected_campaign, status="approved")
                     payslips = Payslip.objects.filter(entry__in=report_entries)
 
                     # Fetch or create CampaignReport
@@ -130,7 +129,6 @@ def manager_dashboard(request):
                             'budget': 0.00
                         }
                     )
-
                 except Campaign.DoesNotExist:
                     messages.error(request, "Campaign not found or does not belong to you.")
 
@@ -272,19 +270,30 @@ def assign_task(request):
     })
 
 # For manager to approve entries
+@login_required
 def approve_entry(request, id):
     try:
+        # Get the entry object
         entry = Entry.objects.get(id=id)
 
         if entry.status != 'approved':
             entry.status = 'approved'
-            # This is where the manager is assigned
-            entry.approved_by = request.user  
-            entry.save()
+            
+            # Ensure the logged-in user is a Manager
+            try:
+                # Get the Manager instance
+                manager = Manager.objects.get(user=request.user)  
+                 # Assign the Manager instance, not User
+                entry.approved_by = manager 
+                entry.save()
+                messages.success(request, "Entry approved successfully.")
+            except Manager.DoesNotExist:
+                messages.error(request, "You are not authorized to approve this entry.")
 
         return redirect('polls:manager_dashboard')
 
     except Entry.DoesNotExist:
+        messages.error(request, "Entry not found.")
         return redirect('polls:manager_dashboard')
 
 # For manager to reject entries

@@ -96,7 +96,7 @@ class Task(models.Model):
 
 # Creating an entry model - employee work hours (for clock in/out)
 class Entry(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    employee = models.ForeignKey('Employee', on_delete=models.CASCADE)
     hours_worked = models.DecimalField(max_digits=5, decimal_places=2)
     clock_in = models.DateTimeField()
     clock_out = models.DateTimeField()
